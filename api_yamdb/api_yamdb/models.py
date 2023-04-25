@@ -35,7 +35,7 @@ class Title(models.Model):
     year = models.IntegerField( #добавил
         verbose_name='Год выпуска',
     )
-    description = models.CharField( #добавил
+    description = models.TextField( #добавил
         verbose_name='Описание',
     )
     genre = models.ManyToManyField(
