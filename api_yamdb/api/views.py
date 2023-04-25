@@ -27,3 +27,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         Отзыв создается для объекта Title полученному через метод 
         get_obj_title.''' 
         serializer.save(author=self.request.user, title=self.get_obj_title())
+
+class CommentViewSet(viewsets.ModelViewSet):
+    pass
