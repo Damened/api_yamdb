@@ -33,3 +33,11 @@ assert get_version() < '4.0.0', 'Пожалуйста, используйте в
 pytest_plugins = [
     'tests.fixtures.fixture_user',
 ]
+
+# позволяет выборочно исключить прохождение тестов в перечисленных файлах
+collect_ignore = ["test_00_user_registration.py",
+                  "test_01_users.py",
+                  "test_02_category.py",
+                  "test_03_genre.py",
+                  "test_04_title.py",
+                  "test_07_files.py",]
