@@ -1,0 +1,39 @@
+from rest_framework import serializers
+from rest_framework.relations import SlugRelatedField
+from rest_framework.validators import UniqueTogetherValidator
+
+from .models import Category, Genre, Title
+
+
+class CategorySerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = '__all__'
+        model = Category
+
+
+class GenreSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        fields = '__all__'
+        model = Genre
+
+
+class TitleSerializer(serializers.ModelSerializer):
+    rating = serializers.SerializerMethodField()
+    genre = serializers.StringRelatedField(many=True, read_only=True)  # Строковое представление, может быть несколько жанров
+    # Или нужно использовать вложенный сериализатор...
+    category = serializers.StringRelatedField(many=False, read_only=True)  # Строковое представление
+
+    class Meta:
+        fields = ('id', 'name', 'year', 'rating', 'description', 'genre',
+                  'category',)
+        read_only_fields = ('rating',)
+        model = Title
+
+    def get_rating(self, obj):
+        reviews = obj.reviews.all()
+        sum_score = 0
+        for review in reviews:
+            sum_score += review.score
+        return sum_score // len(reviews)  # Сумма оценок делится на их количество без остатка
