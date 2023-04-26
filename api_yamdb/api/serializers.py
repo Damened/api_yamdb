@@ -15,8 +15,14 @@ class ReviewSerializer(serializers.ModelSerializer):
         fields = ('__all__') 
         read_only_fields = ('author', 'title')
 
+    def validate_score(self, value):
+        '''Валидатор поля score, его значение должно быть от 1 до 10.'''
+        if 0 > value > 10:
+            raise serializers.ValidationError('Оценка должна быть от 1 до 10')
+        return value
 
-class CommentSerializer(serializers.ModelSerializer): 
+
+class CommentSerializer(serializers.ModelSerializer):
     '''Сериализатор модели Comment.''' 
     author = serializers.SlugRelatedField( 
         slug_field='username', 
