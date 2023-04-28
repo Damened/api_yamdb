@@ -45,7 +45,6 @@ class Review(models.Model):
     #             check=(models.Q(score__gte=1) & models.Q(score__lte=10)),
     #             name='Оценка должна быть в деапазоне от 1 до 10'),    
     #     ]
-    
 
     def __str__(self):
         return f'{self.text} отзыв к произведению {self.title}'
