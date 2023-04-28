@@ -2,6 +2,8 @@ from django.contrib.auth import get_user_model # временно (импорт 
 from django.db import models
 from django.db.models import Q
 
+# from users.models import User  импорт для Юзера из приложения Users
+
 User = get_user_model()  # Временно пока не создана кастомная модель User
 
 

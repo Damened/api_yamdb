@@ -9,7 +9,7 @@ from reviews.models import Comment, Review, Title
 from .serializers import (CommentSerializer, 
                           ReviewSerializer,) 
 
-from .models import Category, Genre, Title
+from reviews.models import Category, Genre, Title
 from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
 
 
