@@ -1,5 +1,5 @@
 import sys
-from ..reviews.models import Category
+from reviews.models import Category
 
 
 def import_category():
