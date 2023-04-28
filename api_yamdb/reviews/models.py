@@ -23,6 +23,7 @@ class Title(models.Model):
     category = models.ForeignKey(
         'Category',
         on_delete=models.SET_NULL,
+        null=True,
         related_name='titles',
         verbose_name='Категория произведения',
     )
@@ -74,7 +75,7 @@ class Category(models.Model):
     slug = models.SlugField(
         max_length=50,
         unique=True,
-        null=False,
+        null=True,
         verbose_name='Раздел категории',
     )
 
@@ -87,7 +88,7 @@ class Genre(models.Model):
     slug = models.SlugField(
         max_length=50,
         unique=True,
-        null=False,
+        null=True,
         verbose_name='Раздел жанра',
     )
 
@@ -96,9 +97,11 @@ class GenreTitle(models.Model):
     genre = models.ForeignKey(
         Genre,
         on_delete=models.SET_NULL,
+        null=True,
         related_name='titles',
     )
     title = models.ForeignKey(
         Title,
         on_delete=models.SET_NULL,
+        null=True,
     )
