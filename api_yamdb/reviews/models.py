@@ -61,6 +61,9 @@ class Title(models.Model):
         verbose_name='Категория произведения',
     )
 
+    def __str__(self):
+        return f'{self.name}'
+
 
 class Review(models.Model):
     author = models.ForeignKey(
@@ -108,9 +111,11 @@ class Category(models.Model):
     slug = models.SlugField(
         max_length=50,
         unique=True,
-        null=True,
         verbose_name='Раздел категории',
     )
+
+    def __str__(self):
+        return f'{self.name} {self.slug}'
 
 
 class Genre(models.Model):
@@ -121,17 +126,22 @@ class Genre(models.Model):
     slug = models.SlugField(
         max_length=50,
         unique=True,
-        null=True,
         verbose_name='Раздел жанра',
     )
+
+    def __str__(self):
+        return f'{self.name} {self.slug}'
 
 
 class GenreTitle(models.Model):
     genre = models.ForeignKey(
         Genre,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
     )
     title = models.ForeignKey(
         Title,
-        on_delete=models.SET_NULL,
+        on_delete=models.CASCADE,
     )
+
+    def __str__(self):
+        return f'{self.genre} {self.title}'
