@@ -4,16 +4,13 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from django.shortcuts import get_object_or_404
 
-from reviews.models import Comment, Review, Title
-
-from .serializers import (CommentSerializer, 
-                          ReviewSerializer,) 
-
-from .models import Category, Genre, Title
-from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
+from reviews.models import Comment, Review, Title, Category, Genre
+from .serializers import (CommentSerializer, ReviewSerializer, CategorySerializer,
+                          GenreSerializer, TitleSerializer)
 
 
 class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+    """Вьюсет для модели Category."""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
@@ -21,6 +18,7 @@ class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class GenreViewSet(viewsets.ReadOnlyModelViewSet):
+    """Вьюсет для модели Genre."""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     filter_backends = (filters.SearchFilter,)
@@ -28,10 +26,12 @@ class GenreViewSet(viewsets.ReadOnlyModelViewSet):
 
 
 class TitleViewSet(viewsets.ReadOnlyModelViewSet):
+    """Вьюсет для модели Title."""
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('category__slug', 'genre__slug', 'name', 'year',)
+
 
 class ReviewViewSet(viewsets.ModelViewSet): 
     '''Вьюсет для CRUD операций с коментариями.''' 
@@ -53,6 +53,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         Отзыв создается для объекта Title полученному через метод 
         get_obj_title.''' 
         serializer.save(author=self.request.user, title=self.get_obj_title())
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     pass
