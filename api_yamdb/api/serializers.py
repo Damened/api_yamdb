@@ -2,8 +2,9 @@ import datetime
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueTogetherValidator
-from reviews.models import Comment, Review, User
-from .models import Category, Genre, Title
+from reviews.models import Comment, Review, Category, Genre, Title
+# from .models import Category, Genre, Title
+from users.models import User
 
 
 class CategorySerializer(serializers.ModelSerializer):

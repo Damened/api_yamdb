@@ -4,12 +4,12 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from django.shortcuts import get_object_or_404
 
-from reviews.models import Comment, Review, Title
+from reviews.models import Comment, Review, Title, Category, Genre, Title
 
 from .serializers import (CommentSerializer, 
                           ReviewSerializer,) 
 
-from .models import Category, Genre, Title
+# from .models import Category, Genre, Title
 from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
 
 
