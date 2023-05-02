@@ -8,7 +8,7 @@ class User(AbstractUser):
     MODERATOR = 'moderator'
     ADMIN = 'admin'
 
-    Biography = models.TextField(
+    bio = models.TextField( # исправил название поля "Biography" на "bio" как в ТЗ 
         max_length=1000,
         verbose_name='Биография',
         blank=True,

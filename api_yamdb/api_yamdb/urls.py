@@ -20,11 +20,13 @@ from rest_framework.authtoken import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('api/', include('api.urls')), # добавил чтобы были доступны юрл-адреса из апи\юрлс
     path(
         'redoc/',
         TemplateView.as_view(template_name='redoc.html'),
         name='redoc'
     ),
-    path('auth/', include('django.contrib.auth.urls')),
-    path('auth/', include('djoser.urls.jwt')),
+    # Адреса для аутентификации вроде нужно настроить в urls приложения reviews?
+    # path('auth/', include('django.contrib.auth.urls')), 
+    # path('auth/', include('djoser.urls.jwt')), # Этот тип аутонтификации точно не используем
 ]

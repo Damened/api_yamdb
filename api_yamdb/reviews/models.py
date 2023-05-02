@@ -1,10 +1,11 @@
-from django.contrib.auth import get_user_model # временно (импорт стандартной мадели юзер)
+# from django.contrib.auth import get_user_model # временно (импорт стандартной мадели юзер)
 from django.db import models
 from django.db.models import Q
+from django.core.exceptions import ValidationError
 
-# from users.models import User  импорт для Юзера из приложения Users
+from users.models import User # импорт для Юзера из приложения Users
 
-User = get_user_model()  # Временно пока не создана кастомная модель User
+# User = get_user_model()  # Временно пока не создана кастомная модель User
 
 
 class Title(models.Model):
@@ -30,16 +31,23 @@ class Title(models.Model):
         verbose_name='Категория произведения',
     )
 
+    def __str__(self):
+        return f'{self.name}'
+
 
 class Review(models.Model):
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='review')
+        User, on_delete=models.CASCADE, related_name='reviews')
     title = models.ForeignKey(
-        Title, on_delete=models.CASCADE, related_name='review')
+        Title, on_delete=models.CASCADE, related_name='reviews')
     text = models.TextField()
     score = models.PositiveIntegerField() # тут еще валидация нужна будет для оценок от 1 до 10
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)
+    
+    def clean(self):
+       if self.score > 10: # проверяет чтобы score было от 1 до 10, но работает только для админки
+            raise ValidationError('Оценка должна быть в деапазоне от 1 до 10')
   
     # проверка что поле 1 <= score <= 10 ????   
     # class Meta:
@@ -81,6 +89,9 @@ class Category(models.Model):
         verbose_name='Раздел категории',
     )
 
+    def __str__(self):
+        return f'{self.name}'
+
 
 class Genre(models.Model):
     name = models.CharField(
@@ -93,6 +104,9 @@ class Genre(models.Model):
         null=True,
         verbose_name='Раздел жанра',
     )
+
+    def __str__(self):
+        return f'{self.name}'
 
 
 class GenreTitle(models.Model):
