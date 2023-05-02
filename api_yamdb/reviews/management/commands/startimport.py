@@ -8,9 +8,6 @@ FILES__MODELS = {
     'category': Category,
     'genre': Genre,
     'titles': Title,
-    'users': User,
-    'review': Review,
-    'comments': Comment,
     'genre_title': GenreTitle,
 }
 

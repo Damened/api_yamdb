@@ -4,38 +4,13 @@ from django.db.models import Q
 from django.contrib.auth.models import AbstractUser
 
 
-class User(AbstractUser):
-    USER = 'user'
-    MODERATOR = 'moderator'
-    ADMIN = 'admin'
-
-    ROLES = [
-        (USER, 'user'),
-        (MODERATOR, 'moderator'),
-        (ADMIN, 'admin'),
-    ]
-
-    Biography = models.TextField(
-        'Биография',
-        blank=True,
-    )
-    role = models.CharField(
-        max_length=10,
-        choices=ROLES,
-        default=USER,
-    )
-
-    @property
-    def is_admin(self):
-        return self.role == self.ADMIN
-
-    @property
-    def is_moderator(self):
-        return self.role == self.MODERATOR
-
-    @property
-    def is_user(self):
-        return self.role == self.USER
+class User(models.Model):
+    username = models.TextField()
+    email = models.TextField()
+    role = models.TextField()
+    bio = models.TextField()
+    first_name = models.TextField()
+    last_name = models.TextField()
 
 
 class Title(models.Model):
@@ -67,9 +42,9 @@ class Title(models.Model):
 
 class Review(models.Model):
     author = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name='review')
+        User, on_delete=models.CASCADE, related_name='reviews')
     title = models.ForeignKey(
-        Title, on_delete=models.CASCADE, related_name='review')
+        Title, on_delete=models.CASCADE, related_name='reviews')
     text = models.TextField()
     score = models.PositiveIntegerField() # тут еще валидация нужна будет для оценок от 1 до 10
     pub_date = models.DateTimeField(

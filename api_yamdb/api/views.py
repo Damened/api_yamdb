@@ -1,42 +1,38 @@
 from rest_framework import viewsets, filters
 from django_filters.rest_framework import DjangoFilterBackend
-from rest_framework import viewsets 
-from rest_framework import permissions
+from rest_framework import viewsets
 from django.shortcuts import get_object_or_404
 
-from reviews.models import Comment, Review, Title
+from reviews.models import Comment, Review, Title, Category, Genre
 
-from .serializers import (CommentSerializer, 
-                          ReviewSerializer,) 
-
-from .models import Category, Genre, Title
-from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
+from .serializers import (CommentSerializer, ReviewSerializer, CategorySerializer,
+                          GenreSerializer, TitleSerializer)
 
 
-class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
+class CategoryViewSet(viewsets.ModelViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
 
-class GenreViewSet(viewsets.ReadOnlyModelViewSet):
+class GenreViewSet(viewsets.ModelViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
 
-class TitleViewSet(viewsets.ReadOnlyModelViewSet):
+class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('category__slug', 'genre__slug', 'name', 'year',)
 
+
 class ReviewViewSet(viewsets.ModelViewSet): 
     '''Вьюсет для CRUD операций с коментариями.''' 
-    serializer_class = ReviewSerializer 
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,) 
+    serializer_class = ReviewSerializer
 
     def get_obj_title(self): 
         '''Получение объекта произведения через его id в аргументе.''' 
