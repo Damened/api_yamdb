@@ -1,3 +1,4 @@
+import datetime
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueTogetherValidator
@@ -38,6 +39,12 @@ class TitleSerializer(serializers.ModelSerializer):
                 sum_score += review.score
             return sum_score // len(reviews)  # Сумма оценок делится на их количество без остатка
         return sum_score
+
+    def validate_year(self, value):
+        if value > datetime.date.today().year:
+            raise serializers.ValidationError('Год выпуска произведения '
+                                              'не может быть больше текущего')
+        return value
 
 
 class ReviewSerializer(serializers.ModelSerializer): 
