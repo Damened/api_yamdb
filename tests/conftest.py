@@ -33,4 +33,3 @@ assert get_version() < '4.0.0', 'Пожалуйста, используйте в
 pytest_plugins = [
     'tests.fixtures.fixture_user',
 ]
-
