@@ -8,7 +8,6 @@ from users.models import User
 
 
 class CategorySerializer(serializers.ModelSerializer):
-    """Сериализатор модели Category."""
 
     class Meta:
         fields = ('name', 'slug',)
@@ -16,7 +15,6 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
-    """Сериализатор модели Genre."""
 
     class Meta:
         fields = ('name', 'slug',)
@@ -24,7 +22,6 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    """Сериализатор модели Title."""
     rating = serializers.SerializerMethodField()
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer(many=False, read_only=True)
@@ -52,7 +49,7 @@ class TitleSerializer(serializers.ModelSerializer):
 
 
 class ReviewSerializer(serializers.ModelSerializer): 
-    '''Сериализатор модели Review.'''
+    '''Сериализатор модели Reviews.''' 
     author = serializers.SlugRelatedField( 
         slug_field='username', 
         read_only=True) 

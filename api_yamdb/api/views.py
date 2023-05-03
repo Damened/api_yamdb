@@ -16,29 +16,25 @@ from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
 from users.permissions import IsAdminModeratorAuthorPermission
 
 
-class CategoryViewSet(viewsets.ReadOnlyModelViewSet):
-    """Вьюсет для модели Category."""
+class CategoryViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
 
-class GenreViewSet(viewsets.ReadOnlyModelViewSet):
-    """Вьюсет для модели Genre."""
+class GenreViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
 
-class TitleViewSet(viewsets.ReadOnlyModelViewSet):
-    """Вьюсет для модели Title."""
+class TitleViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('category__slug', 'genre__slug', 'name', 'year',)
-
 
 class ReviewViewSet(viewsets.ModelViewSet): 
     '''Вьюсет для CRUD операций с коментариями.''' 
@@ -64,7 +60,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
         # author=self.request.user, title=self.get_obj_title()).exists(): #
         #      raise ValidationError('Нельзя оставить отзыв дважды к одному произведению.') #
         serializer.save(author=self.request.user, title=self.get_obj_title())
-
 
 class CommentViewSet(viewsets.ModelViewSet):
     '''Вьюсет для CRUD операций с комментариями.''' 
