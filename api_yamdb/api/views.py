@@ -4,6 +4,7 @@ from rest_framework import viewsets
 from rest_framework import permissions
 from django.shortcuts import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
+from django.core.exceptions import ValidationError
 
 from reviews.models import Comment, Review, Title, Category, Genre, Title
 
@@ -11,6 +12,8 @@ from .serializers import (CommentSerializer,
                           ReviewSerializer,) 
 
 from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
+
+from users.permissions import IsAdminModeratorAuthorPermission
 
 
 class CategoryViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
@@ -36,7 +39,7 @@ class TitleViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
 class ReviewViewSet(viewsets.ModelViewSet): 
     '''Вьюсет для CRUD операций с коментариями.''' 
     serializer_class = ReviewSerializer 
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAdminModeratorAuthorPermission,) #(permissions.IsAuthenticatedOrReadOnly,)
     pagination_class = PageNumberPagination
 
     def get_obj_title(self): 
@@ -55,13 +58,13 @@ class ReviewViewSet(viewsets.ModelViewSet):
         get_obj_title.''' 
         # if Review.objects.filter( #
         # author=self.request.user, title=self.get_obj_title()).exists(): #
-            #  raise ValidationError('Нельзя оставить отзыв дважды к одному произведению.') #
+        #      raise ValidationError('Нельзя оставить отзыв дважды к одному произведению.') #
         serializer.save(author=self.request.user, title=self.get_obj_title())
 
 class CommentViewSet(viewsets.ModelViewSet):
     '''Вьюсет для CRUD операций с комментариями.''' 
     serializer_class = CommentSerializer 
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (IsAdminModeratorAuthorPermission,) #(permissions.IsAuthenticatedOrReadOnly,)
     pagination_class = PageNumberPagination
 
     def get_obj_review(self): 

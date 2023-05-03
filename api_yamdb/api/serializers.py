@@ -67,11 +67,11 @@ class ReviewSerializer(serializers.ModelSerializer):
 
 
     # def validate(self, data):
-    # #     '''Валидатор количества отзывов текущего юзера у произведения.'''
-    # #     if Review.objects.filter( # title = get_object_or_404(Title, pk=self.kwargs.get("title_id")) 
-    # #     author=self.context['request'].user, title=self.context['request'].title.exists()) : #
-    # #         raise ValidationError('Нельзя оставить отзыв дважды к одному произведению.') #
-    # # # user = self.context['request'].user
+    #     '''Валидатор количества отзывов текущего юзера у произведения.'''
+    # # #     if Review.objects.filter( # title = get_object_or_404(Title, pk=self.kwargs.get("title_id")) 
+    # # #     author=self.context['request'].user, title=self.context['request'].title.exists()) : #
+    # # #         raise ValidationError('Нельзя оставить отзыв дважды к одному произведению.') #
+    # # # # user = self.context['request'].user
     #     return (self.context, data)
 
 class CommentSerializer(serializers.ModelSerializer): 
