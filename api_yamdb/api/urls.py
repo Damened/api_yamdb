@@ -28,6 +28,4 @@ router_v1.register('users', UserViewSet, basename='users')
 
 urlpatterns = [ 
     path('v1/', include(router_v1.urls), name='api-root'),
-    path('auth/signup', sign_up_user),
-    path('auth/token/', get_jwt_token),
     ] 
