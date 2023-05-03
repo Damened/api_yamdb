@@ -13,12 +13,13 @@ from .serializers import (CommentSerializer,
 
 from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
 
-from users.permissions import IsAdminModeratorAuthorPermission
+from users.permissions import IsAdminModeratorAuthorPermission, IsAdminOrReadOnlyPermission
 
 
 class CategoryViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = (IsAdminOrReadOnlyPermission,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
@@ -26,6 +27,7 @@ class CategoryViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
 class GenreViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    permission_classes = (IsAdminOrReadOnlyPermission,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
@@ -33,6 +35,7 @@ class GenreViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
 class TitleViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
+    permission_classes = (IsAdminOrReadOnlyPermission,)
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('category__slug', 'genre__slug', 'name', 'year',)
 
