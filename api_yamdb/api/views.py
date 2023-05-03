@@ -6,17 +6,16 @@ from django.shortcuts import get_object_or_404
 from rest_framework.pagination import PageNumberPagination
 from django.core.exceptions import ValidationError
 
-from reviews.models import Comment, Review, Title, Category, Genre, Title
+from reviews.models import Comment, Review, Title, Category, Genre
 
-from .serializers import (CommentSerializer, 
-                          ReviewSerializer,) 
-
-from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
+from .serializers import (CommentSerializer, ReviewSerializer,
+                          CategorySerializer, GenreSerializer, TitleSerializer)
 
 from users.permissions import IsAdminModeratorAuthorPermission, IsAdminOrReadOnlyPermission
 
 
 class CategoryViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
+    """Вьюсет для модели Category."""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnlyPermission,)
@@ -25,6 +24,7 @@ class CategoryViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
 
 
 class GenreViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
+    """Вьюсет для модели Genre."""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnlyPermission,)
@@ -33,11 +33,13 @@ class GenreViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
 
 
 class TitleViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
+    """Вьюсет для модели Title."""
     queryset = Title.objects.all()
     serializer_class = TitleSerializer
     permission_classes = (IsAdminOrReadOnlyPermission,)
     filter_backends = (DjangoFilterBackend,)
     filterset_fields = ('category__slug', 'genre__slug', 'name', 'year',)
+
 
 class ReviewViewSet(viewsets.ModelViewSet): 
     '''Вьюсет для CRUD операций с коментариями.''' 
