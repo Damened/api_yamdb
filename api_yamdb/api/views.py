@@ -11,7 +11,7 @@ from reviews.models import Comment, Review, Title, Category, Genre, Title
 from .serializers import (CommentSerializer, 
                           ReviewSerializer,) 
 
-from .serializers import CategorySerializer, GenreSerializer, TitleSerializer
+from .serializers import CategorySerializer, GenreSerializer, TitleSerializer, GetTitleSerializer
 
 from users.permissions import IsAdminModeratorAuthorPermission, IsAdministator, IsAdminOrReadOnlyPermission
 
@@ -34,10 +34,15 @@ class GenreViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
 
 class TitleViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
     queryset = Title.objects.all()
-    serializer_class = TitleSerializer
     filter_backends = (DjangoFilterBackend,)
-    permission_classes = (IsAdminOrReadOnlyPermission,) #
+    permission_classes = (IsAdminOrReadOnlyPermission,)
     filterset_fields = ('category__slug', 'genre__slug', 'name', 'year',)
+
+    def get_serializer_class(self):
+        if self.request.method == 'GET':
+            return GetTitleSerializer
+        else:
+            return TitleSerializer
 
 class ReviewViewSet(viewsets.ModelViewSet): 
     '''Вьюсет для CRUD операций с коментариями.''' 
