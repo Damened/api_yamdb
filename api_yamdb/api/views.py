@@ -1,4 +1,4 @@
-from rest_framework import viewsets, filters
+from rest_framework import viewsets, filters, mixins
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets 
 from rest_framework import permissions
@@ -17,23 +17,31 @@ from users.permissions import IsAdminModeratorAuthorPermission, IsAdministator, 
 from .filters import TitleFilter
 
 
-class CategoryViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
+class CategoryViewSet(mixins.CreateModelMixin,
+                      mixins.ListModelMixin,
+                      mixins.DestroyModelMixin,
+                      viewsets.GenericViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnlyPermission,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    lookup_field = 'slug'
 
 
-class GenreViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
+class GenreViewSet(mixins.CreateModelMixin,
+                   mixins.ListModelMixin,
+                   mixins.DestroyModelMixin,
+                   viewsets.GenericViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnlyPermission,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
+    lookup_field = 'slug'
 
 
-class TitleViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
+class TitleViewSet(viewsets.ModelViewSet):
     queryset = Title.objects.all()
     filter_backends = (DjangoFilterBackend,)
     permission_classes = (IsAdminOrReadOnlyPermission,)
@@ -44,6 +52,7 @@ class TitleViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
             return GetTitleSerializer
         else:
             return TitleSerializer
+
 
 class ReviewViewSet(viewsets.ModelViewSet): 
     '''Вьюсет для CRUD операций с коментариями.''' 
@@ -69,6 +78,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
         # author=self.request.user, title=self.get_obj_title()).exists(): #
         #      raise ValidationError('Нельзя оставить отзыв дважды к одному произведению.') #
         serializer.save(author=self.request.user, title=self.get_obj_title())
+
 
 class CommentViewSet(viewsets.ModelViewSet):
     '''Вьюсет для CRUD операций с комментариями.''' 
