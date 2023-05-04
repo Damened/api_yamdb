@@ -46,13 +46,16 @@ class Review(models.Model):
        if self.score > 10: # проверяет чтобы score было от 1 до 10, но работает только для админки
             raise ValidationError('Оценка должна быть в деапазоне от 1 до 10')
   
-    # проверка что поле 1 <= score <= 10 ????   
-    # class Meta:
-    #     constraints = [
-    #         models.CheckConstraint(
-    #             check=(models.Q(score__gte=1) & models.Q(score__lte=10)),
-    #             name='Оценка должна быть в деапазоне от 1 до 10'),    
-    #     ]
+    class Meta:
+        '''Ограничения на внесение изменений в БД'''    
+        constraints = [
+            models.CheckConstraint(
+                check=(models.Q(score__gte=1)&models.Q(score__lte=10)),
+                name='Оценка должна быть в деапазоне от 1 до 10'),
+            models.UniqueConstraint(
+                fields=['author', 'title'],
+                name='К произведению нельзя оставить более одного отзыва'),       
+        ]
 
     def __str__(self):
         return f'{self.text} отзыв к произведению {self.title}'
