@@ -14,6 +14,7 @@ from .serializers import (CommentSerializer,
 from .serializers import CategorySerializer, GenreSerializer, TitleSerializer, GetTitleSerializer
 
 from users.permissions import IsAdminModeratorAuthorPermission, IsAdministator, IsAdminOrReadOnlyPermission
+from .filters import TitleFilter
 
 
 class CategoryViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
@@ -36,7 +37,7 @@ class TitleViewSet(viewsets.ModelViewSet): #ReadOnlyModelViewSet
     queryset = Title.objects.all()
     filter_backends = (DjangoFilterBackend,)
     permission_classes = (IsAdminOrReadOnlyPermission,)
-    filterset_fields = ('category__slug', 'genre__slug', 'name', 'year',)
+    filterset_class = TitleFilter
 
     def get_serializer_class(self):
         if self.request.method == 'GET':
