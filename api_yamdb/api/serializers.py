@@ -4,7 +4,7 @@ from rest_framework.relations import SlugRelatedField
 from rest_framework.validators import UniqueTogetherValidator
 from django.shortcuts import get_object_or_404
 
-from reviews.models import Comment, Review, Category, Genre, Title
+from reviews.models import Comment, Review, Category, Genre, Title, GenreTitle
 from users.models import User
 
 
@@ -23,6 +23,24 @@ class GenreSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
+    genre = serializers.SlugRelatedField(slug_field='slug',
+                                         queryset=Genre.objects.all(),
+                                         many=True)
+    category = serializers.SlugRelatedField(slug_field='slug',
+                                            queryset=Category.objects.all())
+
+    class Meta:
+        fields = ('id', 'name', 'year', 'description', 'genre', 'category',)
+        model = Title
+
+    def validate_year(self, value):
+        if value > datetime.date.today().year:
+            raise serializers.ValidationError('Год выпуска произведения '
+                                              'не может быть больше текущего')
+        return value
+
+
+class GetTitleSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
     genre = GenreSerializer(many=True, read_only=True)
     category = CategorySerializer(many=False, read_only=True)
@@ -30,7 +48,6 @@ class TitleSerializer(serializers.ModelSerializer):
     class Meta:
         fields = ('id', 'name', 'year', 'rating', 'description', 'genre',
                   'category',)
-        read_only_fields = ('rating',)
         model = Title
 
     def get_rating(self, obj):
@@ -40,13 +57,7 @@ class TitleSerializer(serializers.ModelSerializer):
             for review in reviews:
                 sum_score += review.score
             return sum_score // len(reviews)  # Сумма оценок делится на их количество без остатка
-        return sum_score
-
-    def validate_year(self, value):
-        if value > datetime.date.today().year:
-            raise serializers.ValidationError('Год выпуска произведения '
-                                              'не может быть больше текущего')
-        return value
+        return None
 
 
 class ReviewSerializer(serializers.ModelSerializer): 
