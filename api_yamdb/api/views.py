@@ -8,10 +8,14 @@ from django.core.exceptions import ValidationError
 
 from reviews.models import Comment, Review, Title, Category, Genre, Title
 
-from .serializers import (CommentSerializer, 
-                          ReviewSerializer,) 
+from .serializers import (CategorySerializer,
+                          CommentSerializer,
+                          GenreSerializer,
+                          GetTitleSerializer,
+                          ReviewSerializer,
+                          TitleSerializer,) 
 
-from .serializers import CategorySerializer, GenreSerializer, TitleSerializer, GetTitleSerializer
+# from .serializers import CategorySerializer, GenreSerializer, TitleSerializer, GetTitleSerializer
 
 from users.permissions import IsAdminModeratorAuthorPermission, IsAdministator, IsAdminOrReadOnlyPermission
 

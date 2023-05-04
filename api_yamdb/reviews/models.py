@@ -38,16 +38,18 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='reviews')
     text = models.TextField()
-    score = models.PositiveIntegerField() # тут еще валидация нужна будет для оценок от 1 до 10
+    score = models.PositiveIntegerField()
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)
     
     def clean(self):
-       if self.score > 10: # проверяет чтобы score было от 1 до 10, но работает только для админки
+       '''Проверяет чтобы score было от 1 до 10, но работает только для админки.'''
+       if self.score > 10: 
             raise ValidationError('Оценка должна быть в деапазоне от 1 до 10')
   
-    # проверка что поле 1 <= score <= 10 ????   
+      
     class Meta:
+        '''Ограничения на внесение изменений в БД'''    
         constraints = [
             models.CheckConstraint(
                 check=(models.Q(score__gte=1)&models.Q(score__lte=10)),
