@@ -1,7 +1,7 @@
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
 from django.contrib.auth.tokens import default_token_generator
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework import status, viewsets, filters, permissions
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -9,7 +9,8 @@ from .models import User
 from .permissions import IsAdministator
 from users.serializers import (SignUpUserSerializer,
                                GetJwtTokenSerializer,
-                               UserSerializer)
+                               UserSerializer,
+                               NotAdminSerializer)#
 
 # Create your views here.
 def get_tokens_for_user(user):
@@ -53,22 +54,34 @@ def get_jwt_token(request):
         return Response(get_tokens_for_user(current_user))
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-@permission_classes([permissions.IsAuthenticated, IsAdministator])
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    lookup_field = "username"
-    filter_backends = (filters.SearchFilter,)
-    search_fields = ('username',)
-    http_method_names = ['get', 'post', 'patch', 'delete', 'head', 'options', 'trace']
+    permission_classes = (permissions.IsAuthenticated, IsAdministator,)
+    lookup_field = 'username'
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('username', )
 
-    def get_object(self):
-        username = self.kwargs.get('username')
-
-        if username == 'me' and (self.request.method == 'GET' or
-                                 self.request.method == 'PATCH'):
-            return self.request.user
-
-        current_user = get_object_or_404(User, username=username)
-        return current_user
+    @action(
+        methods=['GET', 'PATCH'],
+        detail=False,
+        permission_classes=(permissions.IsAuthenticated,),
+        url_path='me')
+    def get_current_user_info(self, request):
+        serializer = UserSerializer(request.user)
+        if request.method == 'PATCH':
+            if request.user.is_admin:
+                serializer = UserSerializer(
+                    request.user,
+                    data=request.data,
+                    partial=True)
+            else:
+                serializer = NotAdminSerializer(
+                    request.user,
+                    data=request.data,
+                    partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
+    
