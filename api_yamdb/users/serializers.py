@@ -10,8 +10,6 @@ class UserSerializer(serializers.ModelSerializer):
         fields = 'username', 'email', 'first_name', 'last_name', 'bio', 'role'
         
 
-###############
-
 class NotAdminSerializer(serializers.ModelSerializer):
         
     class Meta:
@@ -21,7 +19,6 @@ class NotAdminSerializer(serializers.ModelSerializer):
             'last_name', 'bio', 'role')
         read_only_fields = ('role',)
 
-###########################
 
 class SignUpUserSerializer(serializers.Serializer):
     """Сериализатор регистрации пользователей"""
