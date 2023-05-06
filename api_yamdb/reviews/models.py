@@ -28,6 +28,9 @@ class Title(models.Model):
         verbose_name='Категория произведения',
     )
 
+    class Meta:
+        ordering = ('name',)
+
     def __str__(self):
         return f'{self.name}'
 
@@ -47,6 +50,8 @@ class Review(models.Model):
             raise ValidationError('Оценка должна быть в деапазоне от 1 до 10')
   
     class Meta:
+        ordering = ["-pub_date"]
+
         '''Ограничения на внесение изменений в БД'''    
         constraints = [
             models.CheckConstraint(
@@ -71,7 +76,7 @@ class Comment(models.Model):
         'Дата добавления', auto_now_add=True, db_index=True)
     
     class Meta:
-        ordering = ["pub_date"]
+        ordering = ["-pub_date"]
     
     def __str__(self):
         return f'{self.text} комментарий к отзыву {self.review}'
@@ -89,6 +94,9 @@ class Category(models.Model):
         verbose_name='Раздел категории',
     )
 
+    class Meta:
+        ordering = ['name']
+
     def __str__(self):
         return f'{self.name} {self.slug}'
 
@@ -104,6 +112,9 @@ class Genre(models.Model):
         verbose_name='Раздел жанра',
     )
 
+    class Meta:
+        ordering = ['name']
+    
     def __str__(self):
         return f'{self.name} {self.slug}'
 
