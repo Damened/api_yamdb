@@ -134,5 +134,6 @@ SIMPLE_JWT = {
    'AUTH_HEADER_TYPES': ('Bearer',),
 } 
 
+ADMIN_EMAIL = 'hello@yamdb.ru'
 
 AUTH_USER_MODEL = 'users.User'

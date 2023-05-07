@@ -48,11 +48,22 @@ def sign_up_user(request):
 def get_jwt_token(request):
     """Функция получения токена"""
     serializer = GetJwtTokenSerializer(data=request.data)
-    if serializer.is_valid():
-        current_user = get_object_or_404(
-            User, username=request.data.get('username'))
-        return Response(get_tokens_for_user(current_user))
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    serializer.is_valid(raise_exception=True)
+    data = serializer.validated_data
+    try:
+        user = User.objects.get(username=data['username'])
+    except User.DoesNotExist:
+        return Response(
+            {'error': 'Такого пользователя не существует.'},
+            status=status.HTTP_404_NOT_FOUND)
+    if data.get('confirmation_code') == user.confirmation_code:
+        token = RefreshToken.for_user(user).access_token
+        return Response(
+            {'token': str(token)},
+            status=status.HTTP_201_CREATED)
+    return Response(
+        {'error': 'Неверный код подтверждения.'},
+            status=status.HTTP_400_BAD_REQUEST)
 
 class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()

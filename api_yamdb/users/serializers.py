@@ -74,4 +74,8 @@ class GetJwtTokenSerializer(serializers.Serializer):
     username = serializers.CharField(
         max_length=150,
     )
-    confirmation_code = serializers.CharField()
+    confirmation_code = serializers.CharField(required=True)
+
+    class Meta:
+        model = User
+        fields = ('username', 'confirmation_code')

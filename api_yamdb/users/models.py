@@ -1,3 +1,4 @@
+import jwt
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
@@ -17,6 +18,12 @@ class User(AbstractUser):
         default=UserRoles.USER,
     )
 
+    confirmation_code = models.CharField(
+        max_length=254,
+        verbose_name='Код подтверждения',
+        blank=True,
+    )
+
     @property
     def is_admin(self):
         return self.role == UserRoles.ADMIN
@@ -28,3 +35,5 @@ class User(AbstractUser):
     @property
     def is_user(self):
         return self.role == UserRoles.USER
+    
+  
