@@ -52,7 +52,7 @@ def sign_up_user(request):
 @api_view(['POST'])
 @permission_classes([permissions.AllowAny])
 def get_jwt_token(request):
-    """Функция получения токена"""
+    '''Функция получения токена.'''
     serializer = GetJwtTokenSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
     data = serializer.validated_data
