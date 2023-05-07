@@ -1,6 +1,7 @@
 from django.contrib import admin
 from .models import Title, Review, Comment, Category, Genre
 
+
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'slug', )
     search_fields = ('pk', 'name', 'slug', )
@@ -21,7 +22,7 @@ class TitleAdmin(admin.ModelAdmin):
     list_filter = ('category', )
     empty_value_display = '-пусто-'
     list_editable = ('category', )
-    
+
 
 class CommentAdmin(admin.ModelAdmin):
     list_display = ('pk', 'author', 'text', 'review', 'pub_date',)

@@ -1,11 +1,7 @@
-import datetime
 from rest_framework import serializers
-from rest_framework.relations import SlugRelatedField
-from rest_framework.validators import UniqueTogetherValidator
 from django.shortcuts import get_object_or_404
 
-from reviews.models import Comment, Review, Category, Genre, Title, GenreTitle
-from users.models import User
+from reviews.models import Comment, Review, Category, Genre, Title
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -33,12 +29,6 @@ class TitleSerializer(serializers.ModelSerializer):
         fields = ('id', 'name', 'year', 'description', 'genre', 'category',)
         model = Title
 
-    def validate_year(self, value):
-        if value > datetime.date.today().year:
-            raise serializers.ValidationError('Год выпуска произведения '
-                                              'не может быть больше текущего')
-        return value
-
 
 class GetTitleSerializer(serializers.ModelSerializer):
     rating = serializers.SerializerMethodField()
@@ -56,19 +46,19 @@ class GetTitleSerializer(serializers.ModelSerializer):
         if len(reviews) != 0:
             for review in reviews:
                 sum_score += review.score
-            return sum_score // len(reviews)  # Сумма оценок делится на их количество без остатка
+            return sum_score // len(reviews)
         return None
 
 
-class ReviewSerializer(serializers.ModelSerializer): 
-    '''Сериализатор модели Reviews.''' 
-    author = serializers.SlugRelatedField( 
-        slug_field='username', 
-        read_only=True) 
- 
-    class Meta: 
-        model = Review 
-        fields = ('id', 'text', 'author', 'score', 'pub_date',) 
+class ReviewSerializer(serializers.ModelSerializer):
+    '''Сериализатор модели Reviews.'''
+    author = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True)
+
+    class Meta:
+        model = Review
+        fields = ('id', 'text', 'author', 'score', 'pub_date',)
         read_only_fields = ('author', 'title')
 
     def validate_score(self, value):
@@ -76,14 +66,7 @@ class ReviewSerializer(serializers.ModelSerializer):
         if 0 > value or value > 10:
             raise serializers.ValidationError('Оценка должна быть от 1 до 10')
         return value
-   
-    # 
-    # def validate_score(self, value):
-    #     '''Валидатор поля score, его значение должно быть от 1 до 10.'''
-    #     if 0 > value > 10:
-    #         raise serializers.ValidationError('Оценка должна быть от 1 до 10')
-    #     return value
-    
+
     def validate(self, data):
         request = self.context['request']
         author = request.user
@@ -93,19 +76,18 @@ class ReviewSerializer(serializers.ModelSerializer):
             request.method == 'POST'
             and Review.objects.filter(title=title, author=author).exists()
         ):
-            raise serializers.ValidationError('Может существовать только один отзыв!')
+            raise serializers.ValidationError(
+                'Один пользователь может оставить только один отзыв!')
         return data
-    
-  
 
 
-class CommentSerializer(serializers.ModelSerializer): 
-    '''Сериализатор модели Comment.''' 
-    author = serializers.SlugRelatedField( 
-        slug_field='username', 
-        read_only=True) 
- 
-    class Meta: 
-        model = Comment 
-        fields = ('id', 'text', 'author', 'pub_date',) 
+class CommentSerializer(serializers.ModelSerializer):
+    '''Сериализатор модели Comment.'''
+    author = serializers.SlugRelatedField(
+        slug_field='username',
+        read_only=True)
+
+    class Meta:
+        model = Comment
+        fields = ('id', 'text', 'author', 'pub_date',)
         read_only_fields = ('author', 'review')

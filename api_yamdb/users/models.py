@@ -1,15 +1,21 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
+from users.validators import validate_username
 from .userroles import UserRoles
 
 
 class User(AbstractUser):
-    
+    username = models.CharField(
+        validators=(validate_username,),
+        max_length=150,
+        unique=True,
+        blank=False,
+        null=False
+    )
     email = models.EmailField(
         max_length=254,
         unique=True,
-        # blank=False
     )
     bio = models.TextField(
         'Биография',
@@ -20,6 +26,11 @@ class User(AbstractUser):
         verbose_name='Роль',
         choices=UserRoles.choices,
         default=UserRoles.USER,
+    )
+    confirmation_code = models.CharField(
+        max_length=254,
+        verbose_name='Код подтверждения',
+        blank=True,
     )
 
     class Meta:
@@ -39,5 +50,3 @@ class User(AbstractUser):
     @property
     def is_user(self):
         return self.role == UserRoles.USER
-    
-       
