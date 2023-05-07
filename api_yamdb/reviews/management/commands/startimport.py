@@ -1,7 +1,8 @@
 import csv
 
 from django.core.management.base import BaseCommand
-from reviews.models import Category, Genre, Title,  Review, Comment, GenreTitle
+
+from reviews.models import Category, Genre, Title, Review, Comment, GenreTitle
 from users.models import User
 
 PATH = 'static/data/'
@@ -34,10 +35,10 @@ class Command(BaseCommand):
                 records = []
                 for row in reader:
                     records.append(model(**row))
-                    #  print(row) Можно посмотреть какие данные загружены в БД
                 if options['delete_existing']:
                     model.objects.all().delete()
-                    self.stdout.write(self.style.SUCCESS('Предыдущие данные удалены.'))
+                    self.stdout.write(self.style.SUCCESS(
+                        'Предыдущие данные удалены.'))
                 model.objects.bulk_create(records)
                 self.stdout.write(self.style.SUCCESS('Данные импортированы.'))
                 csvfile.close()
