@@ -36,6 +36,10 @@ pip install -r requirements.txt
 Выполнить миграции:
 
 ```sh
+python3 manage.py makemigrations
+```
+
+```sh
 python3 manage.py migrate
 ```
 
