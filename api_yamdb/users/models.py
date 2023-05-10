@@ -2,7 +2,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 
 from users.validators import validate_username
-from .userroles import UserRoles
+from .user_roles import UserRoles
 
 
 class User(AbstractUser):
