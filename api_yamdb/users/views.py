@@ -8,6 +8,7 @@ from rest_framework import status, viewsets, filters, permissions
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from api_yamdb.settings import ADMIN_EMAIL
 from .models import User
 from .permissions import IsAdministator
 from users.serializers import (SignUpUserSerializer,
@@ -34,15 +35,14 @@ def sign_up_user(request):
         email = serializer.validated_data.get('email')
         try:
             current_user, _ = User.objects.get_or_create(
-                email=email,
-                username=username,)
+                email=email, username=username,)
         except IntegrityError:
             raise serializers.ValidationError(
                 'Такой пользователь уже существует')
         confirm_code = default_token_generator.make_token(current_user)
         send_mail('Confirmation of registration',
                   f'your code: {confirm_code}',
-                  'yamdb@ya.ru',
+                  ADMIN_EMAIL,
                   [email],
                   fail_silently=False,)
         return Response(serializer.data, status=status.HTTP_200_OK)
