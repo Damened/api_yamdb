@@ -1,7 +1,47 @@
-from rest_framework import serializers
 from django.shortcuts import get_object_or_404
 
+from rest_framework import serializers
+
+from api.validators import validate_username
 from reviews.models import Comment, Review, Category, Genre, Title
+from users.models import User
+
+
+class UserSerializer(serializers.ModelSerializer):
+    """Сериализатор пользователей"""
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'bio', 'role',)
+
+
+class NotAdminSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('username', 'email', 'first_name',
+                  'last_name', 'bio', 'role',)
+        read_only_fields = ('role',)
+
+
+class SignUpUserSerializer(serializers.Serializer):
+    """Сериализатор регистрации пользователей"""
+    username = serializers.CharField(
+        validators=[validate_username],
+        max_length=150,
+        required=True,)
+    email = serializers.EmailField(
+        max_length=254,
+        required=True,)
+
+
+class GetJwtTokenSerializer(serializers.Serializer):
+    """Сериализатор получения токена"""
+    username = serializers.CharField(
+        max_length=150,
+    )
+    confirmation_code = serializers.CharField()
 
 
 class CategorySerializer(serializers.ModelSerializer):
@@ -60,12 +100,6 @@ class ReviewSerializer(serializers.ModelSerializer):
         model = Review
         fields = ('id', 'text', 'author', 'score', 'pub_date',)
         read_only_fields = ('author', 'title')
-
-    def validate_score(self, value):
-        '''Валидатор поля score, его значение должно быть от 1 до 10.'''
-        if 0 > value or value > 10:
-            raise serializers.ValidationError('Оценка должна быть от 1 до 10')
-        return value
 
     def validate(self, data):
         request = self.context['request']

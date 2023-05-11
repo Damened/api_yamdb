@@ -1,10 +1,9 @@
 import datetime
 from django.db import models
 from django.db.models import Q
-from django.core.exceptions import ValidationError
 from django.core.validators import MaxValueValidator
 
-
+from api.validators import validate_score
 from users.models import User
 
 
@@ -53,15 +52,10 @@ class Review(models.Model):
     title = models.ForeignKey(
         Title, on_delete=models.CASCADE, related_name='reviews')
     text = models.TextField()
-    score = models.PositiveIntegerField()
+    score = models.PositiveIntegerField(
+        validators=(validate_score,))
     pub_date = models.DateTimeField(
         'Дата добавления', auto_now_add=True, db_index=True)
-
-    def clean(self):
-        '''Проверяет чтобы score было от 1 до 10.
-        Работает для админки.'''
-        if 0 > self.score or self.score > 10:
-            raise ValidationError('Оценка должна быть в деапазоне от 1 до 10')
 
     class Meta:
         ordering = ["-pub_date"]

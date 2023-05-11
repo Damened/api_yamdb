@@ -1,8 +1,8 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 
-from users.validators import validate_username
-from .userroles import UserRoles
+from api.validators import validate_username
+from api.user_roles import UserRoles
 
 
 class User(AbstractUser):
@@ -11,7 +11,7 @@ class User(AbstractUser):
         max_length=150,
         unique=True,
         blank=False,
-        null=False
+        null=False,
     )
     email = models.EmailField(
         max_length=254,
@@ -27,11 +27,11 @@ class User(AbstractUser):
         choices=UserRoles.choices,
         default=UserRoles.USER,
     )
-    confirmation_code = models.CharField(
-        max_length=254,
-        verbose_name='Код подтверждения',
-        blank=True,
-    )
+    # confirmation_code = models.CharField(
+    #     max_length=254,
+    #     verbose_name='Код подтверждения',
+    #     blank=True,
+    # )
 
     class Meta:
         ordering = ('username',)
