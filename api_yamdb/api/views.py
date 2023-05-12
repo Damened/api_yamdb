@@ -64,8 +64,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     def get_serializer_class(self):
         if self.request.method == 'GET':
             return GetTitleSerializer
-        else:
-            return TitleSerializer
+        return TitleSerializer
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
@@ -74,21 +73,17 @@ class ReviewViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminModeratorAuthorPermission,)
     pagination_class = PageNumberPagination
 
-    def get_obj_title(self):
-        '''Получение объекта произведения через его id в аргументе.'''
-        title = get_object_or_404(Title, pk=self.kwargs.get("title_id"))
-        return title
-
     def get_queryset(self):
-        '''Получаем все отзывы к произведению через метод get_obj_title.'''
-        new_queryset = self.get_obj_title().reviews.all()
+        '''Получаем все отзывы к произведению.'''
+        title = get_object_or_404(Title, pk=self.kwargs.get("title_id"))
+        new_queryset = title.reviews.all()
         return new_queryset
 
     def perform_create(self, serializer):
-        '''Переопределенный метод создания отзыва.
-        Отзыв создается для объекта Title полученному через метод
-        get_obj_title.'''
-        serializer.save(author=self.request.user, title=self.get_obj_title())
+        '''Переопределенный метод создания отзыва.'''
+        serializer.save(author=self.request.user,
+                        title=get_object_or_404(
+                            Title, pk=self.kwargs.get("title_id")))
 
 
 class CommentViewSet(viewsets.ModelViewSet):
@@ -97,14 +92,8 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = (IsAdminModeratorAuthorPermission,)
     pagination_class = PageNumberPagination
 
-    def get_obj_review(self):
-        '''Получение объекта Отзыв через его id в аргументе.'''
-        review = get_object_or_404(Review, pk=self.kwargs.get("review_id"))
-        return review
-
     def get_queryset(self):
-        '''Получаем все комментарии к посту.
-        Используем id отзыва и id произведения.'''
+        '''Получаем все комментарии к посту.'''
         review_id = self.kwargs.get("review_id")
         title_id = self.kwargs.get("title_id")
         review = get_object_or_404(Review, pk=review_id,
@@ -112,10 +101,10 @@ class CommentViewSet(viewsets.ModelViewSet):
         return review.comments.all()
 
     def perform_create(self, serializer):
-        '''Переопределенный метод создания отзыва.
-        Отзыв создается для объекта Title полученному через метод
-        get_obj_rewiew.'''
-        serializer.save(author=self.request.user, review=self.get_obj_review())
+        '''Переопределенный метод создания отзыва.'''
+        serializer.save(author=self.request.user,
+                        review=get_object_or_404(
+                            Review, pk=self.kwargs.get("review_id")))
 
 
 def get_tokens_for_user(user):
@@ -140,15 +129,14 @@ def sign_up_user(request):
             email=email, username=username)
     except IntegrityError:
         raise serializers.ValidationError(
-             'Такой пользователь уже существует')
+            'Такой пользователь уже существует')
     confirm_code = default_token_generator.make_token(current_user)
     send_mail('Confirmation of registration',
-                f'your code: {confirm_code}',
-                ADMIN_EMAIL,
-                [email],
-                fail_silently=False,)
+              f'your code: {confirm_code}',
+              ADMIN_EMAIL,
+              [email],
+              fail_silently=False,)
     return Response(serializer.data, status=status.HTTP_200_OK)
-    
 
 
 @api_view(['POST'])
