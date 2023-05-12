@@ -27,11 +27,6 @@ class User(AbstractUser):
         choices=UserRoles.choices,
         default=UserRoles.USER,
     )
-    # confirmation_code = models.CharField(
-    #     max_length=254,
-    #     verbose_name='Код подтверждения',
-    #     blank=True,
-    # )
 
     class Meta:
         ordering = ('username',)

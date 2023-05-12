@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404
 from rest_framework import serializers
 from rest_framework import status, viewsets, filters, permissions
 from rest_framework import viewsets, filters, mixins
+from rest_framework.exceptions import MethodNotAllowed
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -29,6 +31,44 @@ from api.serializers import (SignUpUserSerializer,
 from api_yamdb.settings import ADMIN_EMAIL
 from reviews.models import Review, Title, Category, Genre, Title
 from users.models import User
+
+
+class UserViewSet(viewsets.ModelViewSet):
+    queryset = User.objects.all()
+    serializer_class = UserSerializer
+    permission_classes = (IsAuthenticated, IsAdministator,)
+    lookup_field = 'username'
+    filter_backends = (filters.SearchFilter, )
+    search_fields = ('username', )
+
+    @action(
+        methods=['get', 'patch'],
+        detail=False,
+        permission_classes=(permissions.IsAuthenticated,),
+        url_path='me')
+    def get_current_user_info(self, request):
+        serializer = UserSerializer(request.user)
+        if request.method == 'PATCH':
+            if request.user.is_admin:
+                serializer = UserSerializer(
+                    request.user,
+                    data=request.data,
+                    partial=True)
+            else:
+                serializer = NotAdminSerializer(
+                    request.user,
+                    data=request.data,
+                    partial=True)
+            serializer.is_valid(raise_exception=True)
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        '''Метод ограничивает PUT-запрос.'''
+        if request.method == 'PUT' or not request.user.is_admin:
+            raise MethodNotAllowed(request.method)
+        return super().update(request, *args, **kwargs)
 
 
 class CategoryViewSet(mixins.CreateModelMixin,
@@ -152,36 +192,3 @@ def get_jwt_token(request):
             current_user, confirmation_code):
         return Response(get_tokens_for_user(current_user))
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-class UserViewSet(viewsets.ModelViewSet):
-    http_method_names = ['get', 'post', 'head', 'delete', 'patch']
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
-    permission_classes = (permissions.IsAuthenticated, IsAdministator,)
-    lookup_field = 'username'
-    filter_backends = (filters.SearchFilter, )
-    search_fields = ('username', )
-
-    @action(
-        methods=['GET', 'PATCH'],
-        detail=False,
-        permission_classes=(permissions.IsAuthenticated,),
-        url_path='me')
-    def get_current_user_info(self, request):
-        serializer = UserSerializer(request.user)
-        if request.method == 'PATCH':
-            if request.user.is_admin:
-                serializer = UserSerializer(
-                    request.user,
-                    data=request.data,
-                    partial=True)
-            else:
-                serializer = NotAdminSerializer(
-                    request.user,
-                    data=request.data,
-                    partial=True)
-            serializer.is_valid(raise_exception=True)
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.data)
