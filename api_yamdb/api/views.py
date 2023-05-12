@@ -11,6 +11,7 @@ from rest_framework.decorators import api_view, permission_classes, action
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework.exceptions import MethodNotAllowed
 
 from .filters import TitleFilter
 from .serializers import (CategorySerializer,
@@ -155,7 +156,6 @@ def get_jwt_token(request):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-    http_method_names = ['get', 'post', 'head', 'delete', 'patch']
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (permissions.IsAuthenticated, IsAdministator,)
@@ -185,3 +185,8 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.data)
+
+    def update(self, request, *args, **kwargs):
+        if request.method == 'PUT' or not request.user.is_admin:
+            raise MethodNotAllowed(request.method)
+        return super().update(request, *args, **kwargs)
